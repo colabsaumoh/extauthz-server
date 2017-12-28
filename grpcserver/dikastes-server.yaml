@@ -1,0 +1,28 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: dikastes-server
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: dikastes-server
+        version: v1
+    spec:
+      securityContext:
+        fsGroup: 0
+      containers:
+      - name: dikastes-server
+        image: quay.io/saurabh/dtserver:latest
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - mountPath: /tmp/dikastes
+          name: test-volume
+      volumes:
+        - name: test-volume
+          hostPath:
+            # directory location on host
+            path: /tmp/dikastes
+            # this field is optional
+            # type: Socket 

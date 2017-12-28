@@ -1,0 +1,18 @@
+workspace(name = "proto_udsupsver_colabsaumoh")
+
+git_repository(
+    name = "io_bazel_rules_go",
+    remote = "https://github.com/bazelbuild/rules_go.git",
+    commit = "3930b2cdd78a896cae3c6d25b6e3e3b7ea7b8128"
+)
+
+load("@io_bazel_rules_go//go:def.bzl", "go_rules_dependencies", "go_register_toolchains")
+go_rules_dependencies()
+go_register_toolchains()
+
+git_repository(
+	name = "envoy_api",
+	remote = "https://github.com/envoyproxy/data-plane-api",
+	commit = "563b674a2ce6650d459732932ea2bc98c9c9a9bf"
+)
+load("@envoy_api//protobuf:rules.bzl", "proto_repositories")

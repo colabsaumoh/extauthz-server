@@ -1,0 +1,26 @@
+FROM ubuntu:xenial
+RUN apt-get update && \
+    apt-get install -y \
+    curl \
+    iptables \
+    iproute2 \
+    iputils-ping \
+    dnsutils \
+    netcat \
+    tcpdump \
+    net-tools \
+    libc6-dbg gdb valgrind \
+    vim \
+    nano \
+    emacs \
+    wrk \
+    lsof \
+    busybox \
+    sudo 
+
+ADD dikastes-server.sh /usr/local/bin/
+ADD authzserver  /usr/local/bin/
+
+RUN chmod +x /usr/local/bin/dikastes-server.sh
+
+ENTRYPOINT /usr/local/bin/dikastes-server.sh
