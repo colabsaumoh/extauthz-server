@@ -14,10 +14,8 @@ get -u github.com/golang/protobuf/protoc-gen-go
 
 # Build protoc for the external auth gRPC server
 ~/go/bin/protoc -I ./proto -I /usr/local/include ./proto/api/auth/external_auth.proto --go_out=plugins=grpc:ext_auth_v1
-~/go/bin/protoc -I ./proto -I /usr/local/include ./proto/api/address.proto --go_out=plugins=grpc:./
+~/go/bin/protoc -I ./proto -I /usr/local/include ./proto/api/address.proto --go_out=plugins=grpc:vendor
 ~/go/bin/protoc -I ./proto  -I /usr/local/include ./proto/validate/validate.proto --go_out=plugins=grpc:vendor
-
-ln -s ${PWD}/api vendor/api
 
 ## Build the server last
 go build authzserver.go
