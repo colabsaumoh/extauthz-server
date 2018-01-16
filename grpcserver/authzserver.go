@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"strings"
 	"syscall"
+	"time"
 
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -33,6 +34,7 @@ var (
 	CfgListen  string
 	CfgUds	   bool
 	CfgUdsFile string
+	CfgSlowResp int = 0
 	RootCmd = &cobra.Command{
 		Use: "authzRpcServer",
 	        Short: "Test Authz Envoy client",
@@ -44,6 +46,7 @@ func init() {
 	RootCmd.PersistentFlags().StringVarP(&CfgListen, "listen", "l", "localhost:9091", "ListenSocket")
 	RootCmd.PersistentFlags().BoolVarP(&CfgUds, "uds", "u", true, "Use Unix Domain Socket")
 	RootCmd.PersistentFlags().StringVarP(&CfgUdsFile, "sock", "s", dikastesSockFile, "Unix domain socket file")
+	RootCmd.PersistentFlags().IntVarP(&CfgSlowResp, "res-slow", "r", 0, "Wait r sec before responding")
 }
 
 func (s *authzServer) Check(ctx context.Context, request *pb.CheckRequest) (*pb.CheckResponse, error) {
@@ -69,13 +72,15 @@ func (s *authzServer) Check(ctx context.Context, request *pb.CheckRequest) (*pb.
 	log.Printf("%v Check called for %v, resp: %v", s.c, request, r)
 	resp := fmt.Sprintf("all good %v", s.c)
 	s.c += 1
+	// codes.Ok = 0
+	st := &status.Status{Code: 0, Message: resp, Details: nil}
 	if e == false {
 		// codes.PermissionDenied = 7
-		st := &status.Status{Code: 7, Message: resp, Details: nil}
-		return &pb.CheckResponse{Status: st}, nil
-		}
-		// codes.OK = 0
-	st := &status.Status{Code: 0, Message: resp, Details: nil}
+		st.Code = 7
+	}
+	if CfgSlowResp > 0 {
+		time.Sleep(time.Duration(CfgSlowResp) * time.Millisecond)
+	}
 	return &pb.CheckResponse{Status: st}, nil
 }
 
